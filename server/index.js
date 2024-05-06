@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const verifyToken = require("./middleware/verifyToken.middleware");
 const connectDB = require("./database/database");
 const { Server } = require("socket.io");
+const http= require('http');
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -73,12 +74,12 @@ app.post("/paymenthandler", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+const httpServer = http.createServer(app);     
 
-const io = new Server(8000, {
-  cors: true,
+
+
+const io = new Server(httpServer, {
+  cors: tru
 });
 
 const emailToSocketIdMap = new Map();
@@ -112,4 +113,8 @@ io.on("connection", (socket) => {
     console.log("peer:nego:done", ans);
     io.to(to).emit("peer:nego:final", { from: socket.id, ans });
   });
+});
+
+httpServer.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });
